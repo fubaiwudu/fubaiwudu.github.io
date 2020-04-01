@@ -1,0 +1,394 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ElasticSearch的基本应用 | 浮白无度</title>
+<link rel="shortcut icon" href="https://fubaiwudu.github.io/favicon.ico?v=1585744179288">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
+<link rel="stylesheet" href="https://fubaiwudu.github.io/styles/main.css">
+<link rel="alternate" type="application/atom+xml" title="ElasticSearch的基本应用 | 浮白无度 - Atom Feed" href="https://fubaiwudu.github.io/atom.xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+    <meta name="description" content="😀有问题的地方希望大家能帮我指出来，大家共同进步。😄
+Elasticsearch是一个实时分布式搜索和分析引擎
+它用于全文搜索、结构化搜索、分析
+Elasticsearch的革命性在于将这些独立且有用的技术整合成一个一体化的、实时的应用..." />
+    <meta name="keywords" content="ElasticSearch" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://fubaiwudu.github.io">
+  <img class="avatar" src="https://fubaiwudu.github.io/images/avatar.png?v=1585744179288" alt="">
+  </a>
+  <h1 class="site-title">
+    浮白无度
+  </h1>
+  <p class="site-description">
+    
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="/post/about" class="menu">
+          关于
+        </a>
+      
+    
+      
+        <a href="https://fubaiwudu.github.io/post/wangyang" class="menu">
+          点开有惊喜
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              ElasticSearch的基本应用
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-04-01
+              </span>
+              <span>
+                10 min read
+              </span>
+              
+                <a href="https://fubaiwudu.github.io/tag/-QeVTGiWZ/" class="post-tag">
+                  # ElasticSearch
+                </a>
+              
+            </div>
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <p>😀有问题的地方希望大家能帮我指出来，大家共同进步。😄</p>
+<p>Elasticsearch是一个实时分布式搜索和分析引擎<br>
+它用于全文搜索、结构化搜索、分析<br>
+Elasticsearch的革命性在于将这些独立且有用的技术整合成一个一体化的、实时的应用。<br>
+Elasticsearch是一个基于Apache Lucene(TM) 的开源搜索引擎，Lucene只是一个库。想要使用它，你必须使用Java来作为开发语言并将其直接集成到你的应用中</p>
+<p>Elasticsearch不仅仅是Lucene和全文搜索<br>
+分布式的实时分析搜索引擎<br>
+可以扩展到上百台服务器，处理PB级结构化或非结构化数据<br>
+可以通过简单的 RESTful API 、各种语言的客户端甚至命令行与之交互。</p>
+<p>小故事： Shay Banon为了给妻子构建一个食谱搜索引擎从而创建了elastic</p>
+<p>Java API<br>
+Elasticsearch为Java用户提供了两种内置客户端：<br>
+节点客户端(node client) ：<br>
+节点客户端以无数据节点(none data node)身份加入集群，它自己不存储任何数据，但是它知道数据在集群中        的具体位置，并且能够直接转发请求到对应的节点上。</p>
+<pre><code>传输客户端(Transport client) ：
+    这个更轻量的传输客户端能够发送请求到远程集群。它自己不加入集群，只是简单转发请求给集群中的节点。
+    两个Java客户端都通过9300端口与集群交互，使用Elasticsearch传输协议(Elasticsearch Transport Protocol)。节点也通过9300通信，如果9300未开放将不能使用集群。
+</code></pre>
+<p>cURL是一个利用URL语法在命令行下工作的文件传输工具（可以自己查询一下cURL的语法）</p>
+<p>Elasticsearch面向文档(document oriented)<br>
+可以存储整个对象或文档<br>
+索引(index) 每个文档的内容使之可以被搜索<br>
+（官方链接）  Elasticsearch官方客户端 会自动为你序列化和反序列化JSON。<br>
+在Elasticsearch中存储数据的行为就叫做索引(indexing)<br>
+文档归属于一种类型(type) ， 而这些类型存在于索引(index) 中<br>
+elasticsearch分为动态映射和静态映射两种</p>
+<p>常用类型</p>
+<ol>
+<li>
+<p>字符串类型<br>
+text类型：生成倒排索引之前，字符串分解成一个个词项，text类型字段不用于排序，很少用于聚合。<br>
+keyword：适用于索引结构化的字段，如果字段需要进行排序、过滤。聚合等操作可以使用， keyword类型只能通过精确查找。</p>
+</li>
+<li>
+<p>date类型<br>
+日期格式<br>
+（1）日期格式的字符串，比如 “2018-01-13” 或 “2018-01-13 12:10:30”<br>
+（2）long类型的毫秒数( milliseconds-since-the-epoch，epoch就是指UNIX诞生的UTC<br>
+时间1970年1月1日0时0分0秒)<br>
+（3）integer的秒数(seconds-since-the-epoch)</p>
+</li>
+<li>
+<p>Array（数组）类型<br>
+1. el中没有专门的数组数据类型，但是，在默认情况下，任意字段都可以有0或n个 值，所以意味着每个字段           都是数组类型<br>
+2.在el中数组开箱即用，不需进行配置。<br>
+3.一个数组内元素类型是相同的</p>
+</li>
+</ol>
+<p>以及  整数类型，浮点类型，binary（二进制）类型，boolean类型</p>
+<p>ik分词器<br>
+有两个分词算法<br>
+1.ik_smart 为最少切分<br>
+2.ik_max_word为最细粒度划分</p>
+<p>Kibana 是一个开源的分析和可视化平台</p>
+<p>画一些简单的对比图来类比传统关系型数据库<br>
+传统数据库：Relational DB -&gt; Databases -&gt; Tables -&gt; Rows -&gt; Columns<br>
+Elasticsearch：Elasticsearch -&gt; Indices -&gt; Types -&gt; Documents -&gt; Fields<br>
+PUT （操作方式）/megacorp（索引）/employee（类型）/2（文档）  {“frist”：“name”}（字段）<br>
+_search搜索所有文档</p>
+<p>JavaRest高级客户端<br>
+三种客户端<br>
+1. Transport Client<br>
+2. Java Low Level Rest Client（低级rest客户端）<br>
+3. Java High Level REST Client（高级rest客户端）</p>
+<p>三者的区别<br>
+1.TransportClient没有使用RESTful风格的接口，而是二进制的方式传输数据。<br>
+2.ES官方推出了Java Low Level REST Client,它支持RESTful。但是缺点是因为<br>
+TransportClient的使用者把代码迁移到Low Level REST Client的工作量比较大。<br>
+3.ES官方推出Java High Level REST Client,它是基于Java Low Level REST Client的封<br>
+装，并且API接收参数和返回值和TransportClient是一样的，使得代码迁移变得容易<br>
+并且支持了RESTful的风格，兼容了这两种客户端的优点。强烈建议ES5及其以后的<br>
+版本使用Java High Level REST Client。</p>
+<p>依赖坐标<br>
+<dependency><br>
+<groupId>org.elasticsearch.client</groupId><br>
+<artifactId>elasticsearch‐rest‐high‐level‐client</artifactId><br>
+<version>版本号（例如7.4.0）</version><br>
+</dependency></p>
+<p>ElasticSearch操作流程：</p>
+<pre><code>1.创建索引库（相当于创建数据库） 
+    PUT index_name 
+2.创建映射（相当于创建表结构）
+    PUT index_name/mapping
+    推荐：（静态映射）
+    不使用动态映射的原因：域不可控，“类型”、“是否索引”、“是否存储”、“导入索引库分词器”、“搜索分词”使用的都是默认值，有时候默认值不是我们需要的
+     {
+        &quot;properties&quot;:{
+             &quot;name&quot;:{
+                type:&quot;&quot;,//指定数据类型
+                index:&quot;&quot;,//是否索引
+                store:&quot;&quot;,//是否存储
+               analyzer:&quot;&quot;,//创建索引使用的分词器
+                analyzer_search:&quot;&quot;//搜索时使用的分词器
+                }
+           }    
+         }
+
+   3.添加文档(推荐以数据ID&lt;主键&gt;作为文档唯一标识，而不使用ES自动生成的                ID：避免重复数据问题)
+    数据维护（全量索引、增量索引、定时索引、索引同步）
+        PUT index_name/doc/{id} 
+            {
+                &quot;name&quot;:&quot;&quot;,
+                &quot;age&quot;:&quot;&quot;
+            }
+
+  4.搜索/查询文档 
+    ES支持的查询方式：matchAll（查询全部）、term（精确匹配）、match（分词查询）、bool（多条件拼接）、queryString（多域查询）、highlight（高亮）、分页、range（范围）、sort（排序）、            aggregation（分组聚合）、（模糊，正则，前后缀）
+        GET index_name/search
+        GET index_name/doc/{id}
+</code></pre>
+<p>bulk:<br>
+批处理减少请求次数，提高执行效率（实际开发中一般是批量做某一项处理BulkRequest）</p>
+<p>ES JavaAPI搜索操作流程:<br>
+1.连接ES索引库、获取ES高级客户端对象RestHighLevelClient(不同的ES版本获取方式会有细微的差异)<br>
+ES7.x版本获取RestHighLevelClient对象方式<br>
+创建高级客户端（ES7版本及以上）<br>
+new RestHighLevelClient(RestClient.builder(<br>
+new HttpHost(<br>
+host,<br>
+port,<br>
+&quot;http&quot;<br>
+)<br>
+application.xml进行配置<br>
+elasticsearch:<br>
+host: 192.168.149.135<br>
+port: 9200<br>
+2.创建查询对象SearchRequest、SearchSourceBuild、BoolQueryBuild<br>
+ES7.x版本中SearchRequest只需要指定“索引库名称”即可，会使用默认的类型；如果是7.x以下版本还需要指定“type类型”</p>
+<p>//构建查询请求对象，指定查询的索引名称<br>
+SearchRequest searchRequest = new SearchRequest(&quot;goods&quot;);<br>
+//创建查询条件构建器<br>
+SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();<br>
+//构建多条件拼接构造器<br>
+BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();<br>
+3.根据传递的“搜索条件”封装请求对象<br>
+boolQueryBuilder：term、match、range、queryString、filter</p>
+<p>//2.构建各个查询条件<br>
+//2.1 查询品牌名称为:华为<br>
+QueryBuilder termQuery = QueryBuilders.termQuery(&quot;brandName&quot;,&quot;华为&quot;);<br>
+boolQueryBuilder.must(termQuery);<br>
+//2.2. 查询标题包含：手机<br>
+QueryBuilder matchQuery = QueryBuilders.matchQuery(&quot;title&quot;,&quot;手机&quot;);<br>
+boolQueryBuilder.filter(matchQuery);<br>
+//2.3 查询价格在：2000-3000<br>
+QueryBuilder rangeQuery = QueryBuilders.rangeQuery(&quot;price&quot;);<br>
+((RangeQueryBuilder) rangeQuery).gte(2000);<br>
+((RangeQueryBuilder) rangeQuery).lte(3000);<br>
+boolQueryBuilder.filter(rangeQuery);<br>
+过滤查询的优点：不计算得分、效率高<br>
+searchSourceBuilder：分页、排序、分组聚合、高亮</p>
+<p>//分页<br>
+searchSourceBuilder.from(0);<br>
+searchSourceBuilder.size(100);<br>
+//排序<br>
+searchSourceBuilder.sort(&quot;price&quot;, SortOrder.DESC);<br>
+//分组聚合<br>
+AggregationBuilder agg = AggregationBuilders.terms(&quot;goods_brands&quot;).field(&quot;brandName&quot;).size(100);<br>
+searchSourceBuilder.aggregation(agg);<br>
+//高亮<br>
+HighlightBuilder highlighter = new HighlightBuilder();<br>
+highlighter.field(&quot;title&quot;);<br>
+highlighter.preTags(&quot;<font color='red'>&quot;);<br>
+highlighter.postTags(&quot;</font>&quot;);<br>
+searchSourceBuilder.highlighter(highlighter);<br>
+根据请求对象层次结构进行请求对象的合并</p>
+<p>//boolQueryBuilder放入searchSourceBulider<br>
+searchSourceBulider.query(boolQueryBuilder);<br>
+//searchSourceBulider放入searchRequest<br>
+searchRequest.source(searchSourceBulider);</p>
+<pre><code>------------------------------------------------ -------------------------------------------------- -------------------------------------------
+boolQueryBuilder放入SearchSourceBuilder中；SearchSourceBuilder放入 searchRequest；最终所有查询条件都在searchRequest
+-------------------------------------------------------- -------------------------------------------------- -------------------------------------------
+</code></pre>
+<p>4.使用RestHighLevelClient执行查询</p>
+<p>//执行查询<br>
+SearchResponse searchResponse = client.search(searchRequest, RequestOptions.DEFAULT);</p>
+<p>集群&amp;分布式<br>
+集群<br>
+概念:把一个功能模块代码部署在多台服务器，它们完成相同的工作<br>
+优点：高可用、高并发、高性能</p>
+<pre><code>负载均衡
+    概念：根据服务器性能不同，分配对应的负载（请求数）
+
+分布式：
+    概念：把一个项目拆分成多个功能模块，每个功能模块单独部署在一台服务器，协作完成同一个流程
+    优点：高并发、高扩展、解耦
+</code></pre>
+<p>ES集群相关概念：<br>
+集群：拥有相同cluster-name的节点，所构成的整体<br>
+节点：每个elastic-search实例<br>
+索引：es存储数据的地方<br>
+分片：索引可以被拆分为不同的部分进行存储，称为分片 （主分片、副分片）</p>
+<p>ES集群搭建：<br>
+注意：至少三台服务器或者三个Master实例，<br>
+linux服务器搭建的相应步骤想要的同学可以留言。<br>
+😃😃<br>
+ES集群脑裂问题：<br>
+脑裂：集群中多个节点资源竞争都想称为主节点<br>
+产生原因：网络延时、内存回收、负载太大<br>
+解决方案：使用内网连接超时时间设置长一点、jvm内存设置大一点、主节点只负责管理从节点只存储数据</p>
+<p>ES集群默认设置：<br>
+初始化：分5片、每个分片1个备份，共10片（使用ES-head，创建索引库的推荐设置）<br>
+新增索引库：分1片、每个分片1个备份</p>
+<p>ES集群推荐设置（最多限度充分利用资源）：<br>
+1.每个分片推荐大小10-30GB<br>
+2.分片数量推荐 = 节点数量 * 1~3倍</p>
+<p>ES集群路由：<br>
+shard_index = hash(id)%主分片数量</p>
+<p>Kibana管理集群</p>
+<p>只需要修改kibana配置文件config/kibana.yml<br>
+#所有节点的ip、端口都写在中括号即可<br>
+elasticsearch.hosts: [&quot;http://localhost:9201&quot;,&quot;http://localhost:9202&quot;]JavaAPI操作ES集群<br>
+只需要获取RestHighLevelClient对象，使用集群方式：</p>
+<p>//集群方式获取RestHighLevelClient<br>
+new RestHighLevelClient(RestClient.builder(<br>
+new HttpHost(host,port,schema),new HttpHost(host,port,schema)...<br>
+))</p>
+
+              </div>
+              <div class="toc-container">
+                
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://fubaiwudu.github.io/post/wangyang/">
+              <h3 class="post-title">
+                王洋喜欢的人，斯巴拉西
+              </h3>
+            </a>
+          </div>
+        
+
+        
+
+        <div class="site-footer">
+  Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+  <a class="rss" href="https://fubaiwudu.github.io/atom.xml" target="_blank">
+    <i class="ri-rss-line"></i> RSS
+  </a>
+</div>
+
+      </div>
+    </div>
+
+    <script>
+      hljs.initHighlightingOnLoad()
+
+      let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+      // This should probably be throttled.
+      // Especially because it triggers during smooth scrolling.
+      // https://lodash.com/docs/4.17.10#throttle
+      // You could do like...
+      // window.addEventListener("scroll", () => {
+      //    _.throttle(doThatStuff, 100);
+      // });
+      // Only not doing it here to keep this Pen dependency-free.
+
+      window.addEventListener("scroll", event => {
+        let fromTop = window.scrollY;
+
+        mainNavLinks.forEach((link, index) => {
+          let section = document.getElementById(decodeURI(link.hash).substring(1));
+          let nextSection = null
+          if (mainNavLinks[index + 1]) {
+            nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+          }
+          if (section.offsetTop <= fromTop) {
+            if (nextSection) {
+              if (nextSection.offsetTop > fromTop) {
+                link.classList.add("current");
+              } else {
+                link.classList.remove("current");    
+              }
+            } else {
+              link.classList.add("current");
+            }
+          } else {
+            link.classList.remove("current");
+          }
+        });
+      });
+
+    </script>
+  </body>
+</html>
