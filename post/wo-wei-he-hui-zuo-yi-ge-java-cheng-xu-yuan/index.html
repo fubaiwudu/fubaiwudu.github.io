@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>我为何会做一个java程序员 | 浮白无度</title>
-<link rel="shortcut icon" href="https://fubaiwudu.github.io/favicon.ico?v=1585744731417">
+<link rel="shortcut icon" href="https://fubaiwudu.github.io/favicon.ico?v=1585747581893">
 <link href="https://cdn.jsdelivr.net/npm/remixicon@2.3.0/fonts/remixicon.css" rel="stylesheet">
 <link rel="stylesheet" href="https://fubaiwudu.github.io/styles/main.css">
 <link rel="alternate" type="application/atom+xml" title="我为何会做一个java程序员 | 浮白无度 - Atom Feed" href="https://fubaiwudu.github.io/atom.xml">
@@ -22,7 +22,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://fubaiwudu.github.io">
-  <img class="avatar" src="https://fubaiwudu.github.io/images/avatar.png?v=1585744731417" alt="">
+  <img class="avatar" src="https://fubaiwudu.github.io/images/avatar.png?v=1585747581893" alt="">
   </a>
   <h1 class="site-title">
     浮白无度
@@ -112,6 +112,32 @@
           </div>
         
 
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: '75a40bfaee7f4056eb24',
+    clientSecret: 'b67646ea8ff7894cbca8c4c87b3c6390f23b333a',
+    repo: 'fubaitalk',
+    owner: 'fubaiwudu',
+    admin: ['fubaiwudu'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
         
 
         <div class="site-footer">
